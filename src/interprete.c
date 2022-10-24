@@ -32,13 +32,13 @@ static int mult(int a, int b) { return a * b; }
 #define NEXT(c) c = c->suivant
 int interprete(sequence_t* seq, bool debug) {
 	assert(seq);
-    printf ("Programme:");
+    printf ("Programme: ");
     afficher(seq);
-    printf ("\n");
+	printf ("\e[%dC^^^\n", 10);
 
     if (debug) stop();
 
-    int ret;
+    int ret, i = 0;
 	cellule_t* node = seq->tete;
 
 	Stack stack = { NULL };
@@ -58,6 +58,9 @@ int interprete(sequence_t* seq, bool debug) {
 			case Sub:  calcul(&stack, sub);  break;
 			case Mult: calcul(&stack, mult); break;
 
+			case Pose: pose(pop(&stack)); break;
+			case Mesure: stack.head->val = mesure(stack.head->val); break;
+
             default:
 				if ('0' <= node->cmd && node->cmd <= '9') {
 					push(&stack, node->cmd - '0');
@@ -70,10 +73,11 @@ int interprete(sequence_t* seq, bool debug) {
 
         afficherCarte();
 
+		i++;
         printf ("Programme: ");
         afficher(seq);
-        printf ("\n");
-
+        printf ("\e[%dC^^^\n", 10 + i * 5);
+		
 		printf("Stack: ");
 		show_stack(&stack);
         printf ("\n");

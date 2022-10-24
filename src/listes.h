@@ -32,6 +32,8 @@ typedef enum {
 	Add     = '+',
 	Sub     = '-',
 	Mult    = '*',
+	Pose    = 'P',
+	Mesure  = 'M',
 } Commandes;
 
 typedef struct cellule {
