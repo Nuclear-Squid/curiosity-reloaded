@@ -14,8 +14,7 @@ enum { CPLAIN, CMARK, CWATER, CROCK, CTARGET, CURIOSITY }; /* colors */
 
 enum { RATE, CIBLERATEE, REUSSI, VICTOIRE };
 
-struct carte
-{
+struct carte {
     int carte_num;
     unsigned int hauteur;
     unsigned int largeur;

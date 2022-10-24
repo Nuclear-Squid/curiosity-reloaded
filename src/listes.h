@@ -25,28 +25,23 @@
 
 extern bool silent_mode;
 
+typedef enum {
+	Avancer = 'A',
+	Gauche  = 'G',
+	Droite  = 'D',
+} Commandes;
 
-
-
-struct cellule {
-    char   command;
-    /* vous pouvez rajouter d'autres champs ici */
+typedef struct cellule {
+    Commandes cmd;
     struct cellule *suivant;
-};
-typedef struct cellule cellule_t;
+} cellule_t;
 
-struct sequence {
+typedef struct sequence {
     cellule_t *tete;
-};
-typedef struct sequence sequence_t;
-
-cellule_t* nouvelleCellule (void);
-
-void detruireCellule (cellule_t*);
+} sequence_t;
 
 void conversion (char *texte, sequence_t *seq);
 
 void afficher (sequence_t* seq);
-
 
 #endif

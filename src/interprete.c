@@ -16,61 +16,48 @@
  *
  */
 
-void stop (void)
-{
+void stop(void) {
     char enter = '\0';
     printf ("Appuyer sur entrée pour continuer...\n");
     while (enter != '\r' && enter != '\n') { enter = getchar(); }
 }
 
 
-
-int interprete (sequence_t* seq, bool debug)
-{
-    // Version temporaire a remplacer par une lecture des commandes dans la
-    // liste chainee et leur interpretation.
-
-    char commande;
-
-
-
-    debug = true; /* À enlever par la suite et utiliser "-d" sur la ligne de commandes */
-
+#define NEXT(c) c = c->suivant
+int interprete(sequence_t* seq, bool debug) {
+	assert(seq);
     printf ("Programme:");
     afficher(seq);
     printf ("\n");
+
     if (debug) stop();
 
-    // À partir d'ici, beaucoup de choses à modifier dans la suite.
-    printf("\n>>>>>>>>>>> A Faire : interprete.c/interprete() <<<<<<<<<<<<<<<<\n");
-    commande = 'A' ; //à modifier: premiere commande de la sequence
-    int ret;         //utilisée pour les valeurs de retour
+    int ret;
+	cellule_t* node = seq->tete;
 
-    while ( true ) { //à modifier: condition de boucle
-
-        switch (commande) {
-            /* Ici on avance tout le temps, à compléter pour gérer d'autres commandes */
-
-            case 'A':
+    while (node) { //à modifier: condition de boucle
+        switch (node->cmd) {
+            case Avancer:
                 ret = avance();
-                if (ret == VICTOIRE) return VICTOIRE; /* on a atteint la cible */
-                if (ret == RATE)     return RATE;     /* tombé dans l'eau ou sur un rocher */
-                break; /* à ne jamais oublier !!! */
+                if (ret == VICTOIRE) return VICTOIRE;
+                if (ret == RATE)     return RATE;
+                break;
+
+			case Gauche: gauche(); break;
+			case Droite: droite(); break;
 
             default:
-                eprintf("Caractère inconnu: '%c'\n", commande);
+                eprintf("Caractère inconnu: '%c'\n", node->cmd);
         }
 
-        /* Affichage pour faciliter le debug */
+		NEXT(node);
+
         afficherCarte();
         printf ("Programme:");
         afficher(seq);
         printf ("\n");
         if (debug) stop();
     }
-
-    /* Si on sort de la boucle sans arriver sur la cible,
-     * c'est raté :-( */
 
     return CIBLERATEE;
 }
