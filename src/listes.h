@@ -29,6 +29,9 @@ typedef enum {
 	Avancer = 'A',
 	Gauche  = 'G',
 	Droite  = 'D',
+	Add     = '+',
+	Sub     = '-',
+	Mult    = '*',
 } Commandes;
 
 typedef struct cellule {

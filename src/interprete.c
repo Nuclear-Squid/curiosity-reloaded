@@ -7,6 +7,7 @@
 #endif
 #include "listes.h"
 #include "curiosity.h"
+#include "pile.h"
 
 
 /*
@@ -16,11 +17,16 @@
  *
  */
 
-void stop(void) {
+static void stop(void) {
     char enter = '\0';
     printf ("Appuyer sur entrée pour continuer...\n");
     while (enter != '\r' && enter != '\n') { enter = getchar(); }
 }
+
+
+static int add (int a, int b) { return a + b; }
+static int sub (int a, int b) { return a - b; }
+static int mult(int a, int b) { return a * b; }
 
 
 #define NEXT(c) c = c->suivant
@@ -35,6 +41,8 @@ int interprete(sequence_t* seq, bool debug) {
     int ret;
 	cellule_t* node = seq->tete;
 
+	Stack stack = { NULL };
+
     while (node) { //à modifier: condition de boucle
         switch (node->cmd) {
             case Avancer:
@@ -46,16 +54,30 @@ int interprete(sequence_t* seq, bool debug) {
 			case Gauche: gauche(); break;
 			case Droite: droite(); break;
 
+			case Add:  calcul(&stack, add);  break;
+			case Sub:  calcul(&stack, sub);  break;
+			case Mult: calcul(&stack, mult); break;
+
             default:
-                eprintf("Caractère inconnu: '%c'\n", node->cmd);
+				if ('0' <= node->cmd && node->cmd <= '9') {
+					push(&stack, node->cmd - '0');
+				} else {
+					eprintf("Caractère inconnu: '%c'\n", node->cmd);
+				}
         }
 
 		NEXT(node);
 
         afficherCarte();
-        printf ("Programme:");
+
+        printf ("Programme: ");
         afficher(seq);
         printf ("\n");
+
+		printf("Stack: ");
+		show_stack(&stack);
+        printf ("\n");
+
         if (debug) stop();
     }
 
