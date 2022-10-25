@@ -59,3 +59,15 @@ void afficher(sequence_t* seq) {
 	printf("NULL\n");
 }
 
+
+void clear_sequence_contents(sequence_t* seq) {
+	assert(seq);
+	cellule_t* current_node = seq->tete;
+	cellule_t* next_node;
+
+	while (current_node) {
+		next_node = current_node->suivant;
+		free(current_node);
+		current_node = next_node;
+	}
+}

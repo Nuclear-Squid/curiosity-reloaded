@@ -46,3 +46,17 @@ void show_stack(Stack* stack) {
 	}
 	printf("NULL\n");
 }
+
+void clear_stack(Stack* stack) {
+	assert(stack);
+	StackNode* current_node = stack->head;
+	StackNode* next_node;
+
+	while (current_node) {
+		next_node = current_node->next;
+		free(current_node);
+		current_node = next_node;
+	}
+
+	free(stack);
+}

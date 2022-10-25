@@ -9,6 +9,7 @@
 #include "curiosity.h"
 #include "listes.h"
 #include "interprete.h"
+#include "pile.h"
 
 /*
  *  Auteur(s) :
@@ -56,8 +57,9 @@ void launch (bool debug, int carte_num)
         /* curiosity_reset (cur); */
 
         conversion(program,&prog_seq);
+		Stack* stack = calloc(1, sizeof(Stack));
 
-        switch (interprete (&prog_seq, debug)) { //interprete le programme lu jusqu'a la fin de son execution 
+        switch (interprete (&prog_seq, stack, debug)) { //interprete le programme lu jusqu'a la fin de son execution 
 
             if (! silent_mode) {
                 afficherCarte();
@@ -96,6 +98,9 @@ void launch (bool debug, int carte_num)
                 printf ("Valeur de retour de l'interpréte inconnue\n");
                 exit (EXIT_FAILURE);
         }
+
+		clear_stack(stack);
+		clear_sequence_contents(&prog_seq);
     }
 }
 

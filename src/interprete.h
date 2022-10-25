@@ -1,6 +1,8 @@
 #ifndef INTERPRETE_H
 #define INTERPRETE_H
 
-int interprete(sequence_t* seq, bool debug);
+#include "pile.h"
+
+int interprete(sequence_t* seq, Stack* stack, bool debug);
 
 #endif

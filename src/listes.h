@@ -49,4 +49,6 @@ void conversion (char *texte, sequence_t *seq);
 
 void afficher (sequence_t* seq);
 
+void clear_sequence_contents(sequence_t*);
+
 #endif

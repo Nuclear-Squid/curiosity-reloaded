@@ -30,7 +30,7 @@ static int mult(int a, int b) { return a * b; }
 
 
 #define NEXT(c) c = c->suivant
-int interprete(sequence_t* seq, bool debug) {
+int interprete(sequence_t* seq, Stack* stack, bool debug) {
 	assert(seq);
     printf ("Programme: ");
     afficher(seq);
@@ -40,8 +40,6 @@ int interprete(sequence_t* seq, bool debug) {
 
     int ret, i = 0;
 	cellule_t* node = seq->tete;
-
-	Stack stack = { NULL };
 
     while (node) { //à modifier: condition de boucle
         switch (node->cmd) {
@@ -54,16 +52,16 @@ int interprete(sequence_t* seq, bool debug) {
 			case Gauche: gauche(); break;
 			case Droite: droite(); break;
 
-			case Add:  calcul(&stack, add);  break;
-			case Sub:  calcul(&stack, sub);  break;
-			case Mult: calcul(&stack, mult); break;
+			case Add:  calcul(stack, add);  break;
+			case Sub:  calcul(stack, sub);  break;
+			case Mult: calcul(stack, mult); break;
 
-			case Pose: pose(pop(&stack)); break;
-			case Mesure: stack.head->val = mesure(stack.head->val); break;
+			case Pose: pose(pop(stack)); break;
+			case Mesure: stack->head->val = mesure(stack->head->val); break;
 
             default:
 				if ('0' <= node->cmd && node->cmd <= '9') {
-					push(&stack, node->cmd - '0');
+					push(stack, node->cmd - '0');
 				} else {
 					eprintf("Caractère inconnu: '%c'\n", node->cmd);
 				}
@@ -79,7 +77,7 @@ int interprete(sequence_t* seq, bool debug) {
         printf ("\e[%dC^^^\n", 10 + i * 5);
 		
 		printf("Stack: ");
-		show_stack(&stack);
+		show_stack(stack);
         printf ("\n");
 
         if (debug) stop();

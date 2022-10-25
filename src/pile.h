@@ -18,4 +18,6 @@ void calcul(Stack*, int(*fn)(int, int));
 
 void show_stack(Stack*);
 
+void clear_stack(Stack*);
+
 #endif
