@@ -34,10 +34,13 @@ typedef enum {
 	Mult    = '*',
 	Pose    = 'P',
 	Mesure  = 'M',
+	LoadSeq = '{',
+	EvalIf  = '?',
 } Commandes;
 
 typedef struct cellule {
     Commandes cmd;
+	struct sequence* sous_sequence;
     struct cellule *suivant;
 } cellule_t;
 

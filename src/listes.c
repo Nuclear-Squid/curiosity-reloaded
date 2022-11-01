@@ -2,9 +2,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
+
 #ifdef NCURSES
 #include <ncurses.h>
 #endif
+
 #include "listes.h"
 
 
@@ -26,26 +28,40 @@ static cellule_t* new_cell(char c) {
 
 
 static int valid_char(char c) {
-	return c != ' ' && c != '\n';
+	return c != ' ' && c != '\n' && c != '\r';
 }
 
 
 #define NEXT(c) c = c->suivant
 void conversion(char* text, sequence_t* seq) {
 	assert(text && seq);
-	if (!*text) return;  // if string is empty, do nothing
+	static int i = 0;
 
-	cellule_t* cell = new_cell(*text);
+	// if string or code block is empty, do nothing
+	if (text[i] == 0 || text[i] == '}') return;
+
+	cellule_t* cell = new_cell(text[i]);
 	seq->tete = cell;
-	text++;
 
-	while (*text) {
-		if (valid_char(*text)) {
-			cell->suivant = new_cell(*text);
+	while (text[i + 1]) {
+		i++;
+
+		if (text[i] == '}') return;
+
+		if (valid_char(text[i])) {
+			cell->suivant = new_cell(text[i]);
 			NEXT(cell);
+
+			if (text[i] == '{') {
+				i++;
+				cell->sous_sequence = calloc(1, sizeof(sequence_t));
+				conversion(text, cell->sous_sequence);
+			}
 		}
-		text++;
 	}
+
+	// If we got here, then it's the end of the string.
+	i = 0;
 }
 
 
@@ -67,6 +83,10 @@ void clear_sequence_contents(sequence_t* seq) {
 
 	while (current_node) {
 		next_node = current_node->suivant;
+		if (current_node->sous_sequence) {
+			clear_sequence_contents(current_node->sous_sequence);
+			free(current_node->sous_sequence);
+		}
 		free(current_node);
 		current_node = next_node;
 	}

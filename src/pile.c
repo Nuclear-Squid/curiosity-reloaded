@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "listes.h"
 #include "pile.h"
 
 void push(Stack* stack, int x) {
@@ -10,6 +11,7 @@ void push(Stack* stack, int x) {
 	StackNode* new_head = malloc(sizeof(StackNode));
 
 	new_head->val = x;
+	new_head->sous_sequence = NULL;
 	new_head->next = old_head;
 	stack->head = new_head;
 }
@@ -22,6 +24,31 @@ int pop(Stack* stack) {
 	StackNode* new_head = old_head->next;
 
 	int rv = old_head->val;
+
+	free(old_head);
+	stack->head = new_head;
+	return rv;
+}
+
+void push_seq(Stack* stack, sequence_t* seq) {
+	assert(stack);
+	StackNode* old_head = stack->head;
+	StackNode* new_head = malloc(sizeof(StackNode));
+
+	new_head->val = 0;
+	new_head->sous_sequence = seq;
+	new_head->next = old_head;
+	stack->head = new_head;
+}
+
+sequence_t* pop_seq(Stack* stack) {
+	assert(stack);
+	assert(stack->head);
+
+	StackNode* old_head = stack->head;
+	StackNode* new_head = old_head->next;
+
+	sequence_t* rv = old_head->sous_sequence;
 
 	free(old_head);
 	stack->head = new_head;
@@ -41,7 +68,11 @@ void show_stack(Stack* stack) {
 	StackNode* current_node = stack->head;
 
 	while (current_node) {
-		printf("%d -> ", current_node->val);
+		if (current_node->sous_sequence) {
+			afficher(current_node->sous_sequence);
+		} else {
+			printf("%d -> ", current_node->val);
+		}
 		NEXT(current_node);
 	}
 	printf("NULL\n");
@@ -54,6 +85,10 @@ void clear_stack(Stack* stack) {
 
 	while (current_node) {
 		next_node = current_node->next;
+		if (current_node->sous_sequence) {
+			clear_sequence_contents(current_node->sous_sequence);
+			free(current_node->sous_sequence);
+		}
 		free(current_node);
 		current_node = next_node;
 	}

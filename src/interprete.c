@@ -2,9 +2,11 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <stdlib.h>
+
 #ifdef NCURSES
 #include <ncurses.h>
 #endif
+
 #include "listes.h"
 #include "curiosity.h"
 #include "pile.h"
@@ -58,6 +60,22 @@ int interprete(sequence_t* seq, Stack* stack, bool debug) {
 
 			case Pose: pose(pop(stack)); break;
 			case Mesure: stack->head->val = mesure(stack->head->val); break;
+
+			case LoadSeq: push_seq(stack, node->sous_sequence); break;
+
+			case EvalIf:
+				// false block (head) -> true block -> key
+				if (stack->head->next->next->val) {
+					pop(stack);  // ignore false block
+					ret = interprete(pop_seq(stack), stack, debug);
+				} else {
+					ret = interprete(pop_seq(stack), stack, debug);
+					pop(stack);  // ignore true block
+				}
+				pop(stack);  // get rid of key
+                if (ret == VICTOIRE) return VICTOIRE;
+                if (ret == RATE)     return RATE;
+			break;
 
             default:
 				if ('0' <= node->cmd && node->cmd <= '9') {

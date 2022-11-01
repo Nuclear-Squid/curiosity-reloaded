@@ -19,8 +19,7 @@ unsigned int cX=9999,cY=9999; // Position de curiosity (cX,cY)
 int dX=1,dY=0;  // Direction de curiosity (dX,dY)=(1,0)|(-1,0)|(0,1)|(0,-1)
 
 
-void initCarte (int carte_num)
-{
+void initCarte (int carte_num) {
     mars.carte_num = carte_num;
     mars.hauteur = 0;
     mars.largeur = 0;
@@ -34,8 +33,8 @@ void initCarte (int carte_num)
     dX = 1; dY = 0;
 }
 
-void ajoutLigneCarte (char *ligne)
-{
+
+void ajoutLigneCarte (char *ligne) {
     assert (mars.hauteur < tailleCarte);
 
     if (mars.hauteur == 0) { /* première ligne */
@@ -75,8 +74,7 @@ void ajoutLigneCarte (char *ligne)
 
 int char_to_color (char c);
 
-void afficherCarte ()
-{
+void afficherCarte () {
     unsigned int i,j;
     char c;
 
@@ -113,8 +111,7 @@ void afficherCarte ()
 /* Vérifie que toutes les marques sur la carte de test ont bien été 
  * posées par Curiosity, et que Curiosity n'a pas posé plus de marques
  * que demandé. */
-bool verifieMarques (void)
-{
+bool verifieMarques (void) {
     unsigned int i,j;
     bool erreur = false;
 
@@ -136,8 +133,7 @@ bool verifieMarques (void)
 }
 
 
-int avance(void)
-{
+int avance(void) {
     int tmpX = cX + dX;
     int tmpY = cY + dY;
 
