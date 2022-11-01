@@ -43,6 +43,12 @@ void conversion(char* text, sequence_t* seq) {
 	cellule_t* cell = new_cell(text[i]);
 	seq->tete = cell;
 
+	if (text[i] == '{') {
+		i++;
+		cell->sous_sequence = calloc(1, sizeof(sequence_t));
+		conversion(text, cell->sous_sequence);
+	}
+
 	while (text[i + 1]) {
 		i++;
 
