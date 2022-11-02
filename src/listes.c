@@ -45,7 +45,8 @@ void conversion(char* text, sequence_t* seq) {
 
 	if (text[i] == '{') {
 		i++;
-		cell->sous_sequence = calloc(1, sizeof(sequence_t));
+		cell->sous_sequence = malloc(sizeof(sequence_t));
+		cell->sous_sequence->ref_count = 1;
 		conversion(text, cell->sous_sequence);
 	}
 
@@ -60,7 +61,8 @@ void conversion(char* text, sequence_t* seq) {
 
 			if (text[i] == '{') {
 				i++;
-				cell->sous_sequence = calloc(1, sizeof(sequence_t));
+				cell->sous_sequence = malloc(sizeof(sequence_t));
+				cell->sous_sequence->ref_count = 1;
 				conversion(text, cell->sous_sequence);
 			}
 		}

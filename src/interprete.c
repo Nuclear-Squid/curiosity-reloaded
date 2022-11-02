@@ -42,8 +42,9 @@ int interprete(sequence_t* seq, Stack* stack, bool debug) {
 
     int ret, i = 0;
 	cellule_t* node = seq->tete;
+	sequence_t* sub_sequence;
 
-    while (node) { //à modifier: condition de boucle
+    while (node) {
         switch (node->cmd) {
             case Avancer:
                 ret = avance();
@@ -61,21 +62,63 @@ int interprete(sequence_t* seq, Stack* stack, bool debug) {
 			case Pose: pose(pop(stack)); break;
 			case Mesure: stack->head->val = mesure(stack->head->val); break;
 
-			case LoadSeq: push_seq(stack, node->sous_sequence); break;
+			case LoadSeq:
+				 push_seq(stack, node->sous_sequence);
+				 node->sous_sequence = NULL;
+			 break;
 
 			case EvalIf:
 				// false block (head) -> true block -> key
 				if (stack->head->next->next->val) {
 					pop(stack);  // ignore false block
-					ret = interprete(pop_seq(stack), stack, debug);
+					sub_sequence = pop_seq(stack);
+					ret = interprete(sub_sequence, stack, debug);
 				} else {
-					ret = interprete(pop_seq(stack), stack, debug);
+					sub_sequence = pop_seq(stack);
+					ret = interprete(sub_sequence, stack, debug);
 					pop(stack);  // ignore true block
 				}
 				pop(stack);  // get rid of key
+				if (--sub_sequence->ref_count == 0) {
+					clear_sequence_contents(sub_sequence);
+					free(sub_sequence);
+				}
                 if (ret == VICTOIRE) return VICTOIRE;
                 if (ret == RATE)     return RATE;
 			break;
+
+			case SwapHead: swap_head(stack); break;
+
+			case RawEval:
+				sub_sequence = pop_seq(stack);
+				ret = interprete(sub_sequence, stack, debug);
+				if (--sub_sequence->ref_count == 0) {
+					clear_sequence_contents(sub_sequence);
+					free(sub_sequence);
+				}
+                if (ret == VICTOIRE) return VICTOIRE;
+                if (ret == RATE)     return RATE;
+			break;
+
+			case Loop:
+				if (stack->head->val == 0) {
+					pop(stack);  // delete the loop code block.
+					pop(stack);  // delete the number of remaining iter
+				} else {
+					stack->head->next->val--;
+					ret = interprete(
+							stack->head->next->sous_sequence,
+							stack, debug);
+					if (ret == VICTOIRE) return VICTOIRE;
+					if (ret == RATE)     return RATE;
+					goto StayOnCurrentNode;
+				}
+
+			break;
+
+			case CloneHead: clone_head(stack); break;
+
+			case IgnoreHead: pop(stack); break;
 
             default:
 				if ('0' <= node->cmd && node->cmd <= '9') {
@@ -87,6 +130,7 @@ int interprete(sequence_t* seq, Stack* stack, bool debug) {
 
 		NEXT(node);
 
+StayOnCurrentNode:
         afficherCarte();
 
 		i++;

@@ -21,6 +21,10 @@ struct sequence* pop_seq(Stack*);
 
 void calcul(Stack*, int(*fn)(int, int));
 
+void swap_head(Stack*);
+
+void clone_head(Stack*);
+
 void show_stack(Stack*);
 
 void clear_stack(Stack*);

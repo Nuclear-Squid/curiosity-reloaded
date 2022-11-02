@@ -95,3 +95,30 @@ void clear_stack(Stack* stack) {
 
 	free(stack);
 }
+
+void swap_head(Stack* stack) {
+	assert(stack);
+	StackNode* tmp_head = stack->head;
+	StackNode* tmp_head_next = stack->head->next;
+
+	stack->head = tmp_head_next;
+	tmp_head->next = tmp_head_next->next;
+	stack->head->next = tmp_head;
+}
+
+void clone_head(Stack* stack) {
+	assert(stack);
+	assert(stack->head);
+	StackNode* new_head = malloc(sizeof(StackNode));
+
+	new_head->val = stack->head->val;
+
+	if (stack->head->sous_sequence) {
+		stack->head->sous_sequence->ref_count++;
+		new_head->sous_sequence = stack->head->sous_sequence;
+	}
+
+	new_head->next = stack->head;
+
+	stack->head = new_head;
+}

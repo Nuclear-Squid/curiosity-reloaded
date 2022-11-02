@@ -26,16 +26,22 @@
 extern bool silent_mode;
 
 typedef enum {
-	Avancer = 'A',
-	Gauche  = 'G',
-	Droite  = 'D',
-	Add     = '+',
-	Sub     = '-',
-	Mult    = '*',
-	Pose    = 'P',
-	Mesure  = 'M',
-	LoadSeq = '{',
-	EvalIf  = '?',
+	Avancer    = 'A',
+	Gauche     = 'G',
+	Droite     = 'D',
+	Add        = '+',
+	Sub        = '-',
+	Mult       = '*',
+	Pose       = 'P',
+	Mesure     = 'M',
+	LoadSeq    = '{',
+	EvalIf     = '?',
+	SwapHead   = 'X',
+	RawEval    = '!',
+	Loop       = 'B',
+	Rotation   = 'R',
+	CloneHead  = 'C',
+	IgnoreHead = 'I',
 } Commandes;
 
 typedef struct cellule {
@@ -45,6 +51,7 @@ typedef struct cellule {
 } cellule_t;
 
 typedef struct sequence {
+	int ref_count;
     cellule_t *tete;
 } sequence_t;
 
