@@ -51,7 +51,6 @@ typedef struct cellule {
 } cellule_t;
 
 typedef struct sequence {
-	int ref_count;
     cellule_t *tete;
 } sequence_t;
 

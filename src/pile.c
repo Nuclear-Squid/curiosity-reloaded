@@ -42,8 +42,7 @@ void push_seq(Stack* stack, sequence_t* seq) {
 }
 
 sequence_t* pop_seq(Stack* stack) {
-	assert(stack);
-	assert(stack->head);
+	assert(stack && stack->head);
 
 	StackNode* old_head = stack->head;
 	StackNode* new_head = old_head->next;
@@ -85,10 +84,10 @@ void clear_stack(Stack* stack) {
 
 	while (current_node) {
 		next_node = current_node->next;
-		if (current_node->sous_sequence) {
-			clear_sequence_contents(current_node->sous_sequence);
-			free(current_node->sous_sequence);
-		}
+		/* if (current_node->sous_sequence) { */
+		/* 	clear_sequence_contents(current_node->sous_sequence); */
+		/* 	free(current_node->sous_sequence); */
+		/* } */
 		free(current_node);
 		current_node = next_node;
 	}
@@ -111,14 +110,44 @@ void clone_head(Stack* stack) {
 	assert(stack->head);
 	StackNode* new_head = malloc(sizeof(StackNode));
 
-	new_head->val = stack->head->val;
+	new_head->val           = stack->head->val;
+	new_head->sous_sequence = stack->head->sous_sequence;
+	new_head->next          = stack->head;
 
-	if (stack->head->sous_sequence) {
-		stack->head->sous_sequence->ref_count++;
-		new_head->sous_sequence = stack->head->sous_sequence;
+	stack->head = new_head;
+}
+
+
+#define VALID_NODE(node) \
+	if (!node) {\
+		eprintf("Stack node out of range\n");\
+		exit(1);\
 	}
+void rotation(Stack* stack, int step, int n_nodes) {
+	assert(stack);
 
-	new_head->next = stack->head;
+	// If true, output is the same as input, so do nothing.
+	// (modulo is safe since `||` is a shortcut operator)
+	if (n_nodes == 0 || n_nodes == 1 || step % n_nodes == 0) return;
 
+	step = n_nodes - (step % n_nodes);
+
+	StackNode* current_node = stack->head;
+	for (int i = 0; i < step - 1; i++) {
+		VALID_NODE(current_node);
+		current_node = current_node->next;
+	}
+	StackNode* new_tail_segment = current_node;
+	StackNode* new_head = new_tail_segment->next;
+
+	for (int i = 0; i < n_nodes - step; i++) {
+		VALID_NODE(current_node);
+		current_node = current_node->next;
+	}
+	StackNode* old_tail_segment = current_node;
+	StackNode* first_unchanged_node = current_node->next;
+
+	old_tail_segment->next = stack->head;
+	new_tail_segment->next = first_unchanged_node;
 	stack->head = new_head;
 }

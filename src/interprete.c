@@ -62,50 +62,47 @@ int interprete(sequence_t* seq, Stack* stack, bool debug) {
 			case Pose: pose(pop(stack)); break;
 			case Mesure: stack->head->val = mesure(stack->head->val); break;
 
+			case SwapHead:   swap_head(stack);  break;
+			case CloneHead:  clone_head(stack); break;
+			case IgnoreHead: pop(stack);        break;
+
 			case LoadSeq:
 				 push_seq(stack, node->sous_sequence);
-				 node->sous_sequence = NULL;
+				 /* node->sous_sequence = NULL; */
 			 break;
 
 			case EvalIf:
 				// false block (head) -> true block -> key
+				// GET RID OF THE KEY **BEFORE** EVALUATING THE CODE
+				// YOU FUCKING MORON !!!!
 				if (stack->head->next->next->val) {
 					pop(stack);  // ignore false block
 					sub_sequence = pop_seq(stack);
+					pop(stack);  // get rid of key
 					ret = interprete(sub_sequence, stack, debug);
 				} else {
 					sub_sequence = pop_seq(stack);
 					ret = interprete(sub_sequence, stack, debug);
+					pop(stack);  // get rid of key
 					pop(stack);  // ignore true block
-				}
-				pop(stack);  // get rid of key
-				if (--sub_sequence->ref_count == 0) {
-					clear_sequence_contents(sub_sequence);
-					free(sub_sequence);
 				}
                 if (ret == VICTOIRE) return VICTOIRE;
                 if (ret == RATE)     return RATE;
 			break;
 
-			case SwapHead: swap_head(stack); break;
-
 			case RawEval:
 				sub_sequence = pop_seq(stack);
 				ret = interprete(sub_sequence, stack, debug);
-				if (--sub_sequence->ref_count == 0) {
-					clear_sequence_contents(sub_sequence);
-					free(sub_sequence);
-				}
                 if (ret == VICTOIRE) return VICTOIRE;
                 if (ret == RATE)     return RATE;
 			break;
 
 			case Loop:
 				if (stack->head->val == 0) {
-					pop(stack);  // delete the loop code block.
+					pop_seq(stack);  // delete the loop code block.
 					pop(stack);  // delete the number of remaining iter
 				} else {
-					stack->head->next->val--;
+					stack->head->val--;
 					ret = interprete(
 							stack->head->next->sous_sequence,
 							stack, debug);
@@ -113,12 +110,9 @@ int interprete(sequence_t* seq, Stack* stack, bool debug) {
 					if (ret == RATE)     return RATE;
 					goto StayOnCurrentNode;
 				}
-
 			break;
 
-			case CloneHead: clone_head(stack); break;
-
-			case IgnoreHead: pop(stack); break;
+			case Rotation: rotation(stack, pop(stack), pop(stack)); break;
 
             default:
 				if ('0' <= node->cmd && node->cmd <= '9') {
@@ -129,11 +123,11 @@ int interprete(sequence_t* seq, Stack* stack, bool debug) {
         }
 
 		NEXT(node);
+		i++;
 
 StayOnCurrentNode:
         afficherCarte();
 
-		i++;
         printf ("Programme: ");
         afficher(seq);
         printf ("\e[%dC^^^\n", 10 + i * 5);

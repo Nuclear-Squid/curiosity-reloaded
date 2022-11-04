@@ -40,13 +40,18 @@ void conversion(char* text, sequence_t* seq) {
 	// if string or code block is empty, do nothing
 	if (text[i] == 0 || text[i] == '}') return;
 
+	// get rid of leading bullshit
+	while (!valid_char(text[i])) i++;
+
+	// check again, just in case
+	if (text[i] == '}') return;
+
 	cellule_t* cell = new_cell(text[i]);
 	seq->tete = cell;
 
 	if (text[i] == '{') {
 		i++;
-		cell->sous_sequence = malloc(sizeof(sequence_t));
-		cell->sous_sequence->ref_count = 1;
+		cell->sous_sequence = calloc(1, sizeof(sequence_t));
 		conversion(text, cell->sous_sequence);
 	}
 
@@ -61,8 +66,7 @@ void conversion(char* text, sequence_t* seq) {
 
 			if (text[i] == '{') {
 				i++;
-				cell->sous_sequence = malloc(sizeof(sequence_t));
-				cell->sous_sequence->ref_count = 1;
+				cell->sous_sequence = calloc(1, sizeof(sequence_t));
 				conversion(text, cell->sous_sequence);
 			}
 		}

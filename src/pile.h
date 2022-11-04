@@ -29,4 +29,6 @@ void show_stack(Stack*);
 
 void clear_stack(Stack*);
 
+void rotation(Stack*, int n_nodes, int step);
+
 #endif
