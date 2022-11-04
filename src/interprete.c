@@ -65,6 +65,7 @@ int interprete(sequence_t* seq, Stack* stack, bool debug) {
 			case SwapHead:   swap_head(stack);  break;
 			case CloneHead:  clone_head(stack); break;
 			case IgnoreHead: pop(stack);        break;
+			case Inverse:    inverse(stack);    break;
 
 			case LoadSeq:
 				 push_seq(stack, node->sous_sequence);

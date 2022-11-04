@@ -151,3 +151,25 @@ void rotation(Stack* stack, int step, int n_nodes) {
 	new_tail_segment->next = first_unchanged_node;
 	stack->head = new_head;
 }
+
+void inverse(Stack* stack) {
+	assert(stack);
+
+	// if there is 0 or 1 element in the stack, do nothing
+	if (!stack->head) return;
+	if (!stack->head->next) return;
+
+	StackNode* previous_node = NULL;
+	StackNode* current_node = stack->head;
+	StackNode* next_node = stack->head->next;
+
+	do {
+		current_node->next = previous_node;
+		previous_node = current_node;
+		current_node = next_node;
+		next_node = next_node->next;
+	} while (next_node);
+
+	current_node->next = previous_node;
+	stack->head = current_node;
+}

@@ -42,6 +42,7 @@ typedef enum {
 	Rotation   = 'R',
 	CloneHead  = 'C',
 	IgnoreHead = 'I',
+	Inverse    = 'Z',
 } Commandes;
 
 typedef struct cellule {
